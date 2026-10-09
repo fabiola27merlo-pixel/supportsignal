@@ -1,0 +1,297 @@
+{
+  "name": "SupportSignal - Main Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cc428de3-97aa-4af9-bdf4-3974107df9a7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://api.intercom.io/conversations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "013bf2b9-a27b-4d99-ba88-c1597cd60c7d",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "pGGJdAKPEMxSt7WY",
+          "name": "Intercom - SupportSignal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "conversations",
+        "include": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "236d2e65-cade-415e-9691-13e694e630ef",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3cc6b0c2-3d84-4c08-bd1b-987fb8f448fa",
+              "leftValue": "={{ $json.conversations.company.name }}",
+              "rightValue": "NovaTech",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "e3748555-c8b5-4003-b585-bae75ea2ec29",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "resource": "account",
+        "operation": "getAll",
+        "limit": 1,
+        "options": {
+          "fields": "Id,Name,ARR__c,SLA__c,Customer_Segment__c,Region__c,CS_Owner__c,NumberOfEmployees",
+          "conditionsUi": {
+            "conditionValues": [
+              {
+                "field": "Name",
+                "value": "={{ $json.conversations.company.name }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.salesforce",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        0
+      ],
+      "id": "f52f7ae3-1bbd-487d-8a77-e54b3df0b088",
+      "name": "Get many accounts",
+      "credentials": {
+        "salesforceOAuth2Api": {
+          "id": "soTW5upqbRSffFPK",
+          "name": "Salesforce account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        192
+      ],
+      "id": "3997fdff-793d-4adc-9c28-fde3d3d1ed44",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39e70621-7d04-4fe1-b0d4-d90d3c7a603c",
+              "name": "conversation_id",
+              "value": "={{ $json.conversations.id }}",
+              "type": "string"
+            },
+            {
+              "id": "c6670ff3-4dbc-4f3e-91f9-b056b7ea67c1",
+              "name": "ticket_title",
+              "value": "={{ $json.conversations.title }}",
+              "type": "string"
+            },
+            {
+              "id": "2913d83b-07d7-4cba-a531-d7c43f76e57a",
+              "name": "=message",
+              "value": "={{ $json.conversations.source.body.replace(/<br\\s*\\/?>/gi, '\\n').replace(/<[^>]+>/g, '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "31c67a7d-531b-4c27-9168-a0747eb35e02",
+              "name": "customer_name",
+              "value": "={{ $json.conversations.company.name }}",
+              "type": "string"
+            },
+            {
+              "id": "ae3d7e1e-9a19-4408-9c4f-8d94123cdfd7",
+              "name": "customer_segment",
+              "value": "={{ $json.Customer_Segment__c }}",
+              "type": "string"
+            },
+            {
+              "id": "464c23f2-0a54-4fab-8d0b-6d1bd8a37fc7",
+              "name": "arr",
+              "value": "={{ $json.ARR__c }}",
+              "type": "number"
+            },
+            {
+              "id": "b771af4e-0066-45e2-8129-f5d2b5628502",
+              "name": "sla",
+              "value": "={{ $json.SLA__c }}",
+              "type": "string"
+            },
+            {
+              "id": "6c56aad6-3efb-45e6-9c4f-75924ba5e458",
+              "name": "region",
+              "value": "={{ $json.Region__c }}",
+              "type": "string"
+            },
+            {
+              "id": "67218543-91dc-45a2-8ffc-8e718d8a927c",
+              "name": "cs_owner",
+              "value": "={{ $json.CS_Owner__c }}",
+              "type": "string"
+            },
+            {
+              "id": "10f29c6b-4845-40c3-94b7-7189bf4f7dce",
+              "name": "employees",
+              "value": "={{ $json.NumberOfEmployees }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        896,
+        192
+      ],
+      "id": "2b0e88ec-db96-4959-a037-24d86d1fef10",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Get many accounts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many accounts": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b794a630-698c-4d27-827c-e1f35eb02c23",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4c15731e9a346c69def811be2053d705b21e21a79029305db9d12b409fb86b59"
+  },
+  "nodeGroups": [],
+  "id": "bW81lwEtGnTQrgOS",
+  "tags": []
+}
