@@ -62,7 +62,7 @@
             {
               "id": "3cc6b0c2-3d84-4c08-bd1b-987fb8f448fa",
               "leftValue": "={{ $json.conversations.company.name }}",
-              "rightValue": "NovaTech",
+              "rightValue": "BrightDesk",
               "operator": {
                 "type": "string",
                 "operation": "equals"
@@ -192,6 +192,12 @@
               "name": "employees",
               "value": "={{ $json.NumberOfEmployees }}",
               "type": "number"
+            },
+            {
+              "id": "3b362039-56f9-4657-9730-3086bb8f4e0b",
+              "name": "service",
+              "value": "={{ \n  $json.conversations.source.body.includes('CRM Sync')\n    ? 'crm-sync'\n    : $json.conversations.source.body.includes('Authentication')\n      ? 'authentication'\n      : 'unknown'\n}}",
+              "type": "string"
             }
           ]
         },
@@ -205,6 +211,35 @@
       ],
       "id": "2b0e88ec-db96-4959-a037-24d86d1fef10",
       "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:8000/v1/system-context/{{ $json.service }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        192
+      ],
+      "id": "dd388b15-c7ec-449f-816d-c7af7a105d86",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        912,
+        400
+      ],
+      "id": "01b8f483-825e-47c0-bd61-08d9d4a373a6",
+      "name": "Merge-Context"
     }
   ],
   "pinData": {},
@@ -279,6 +314,33 @@
           }
         ]
       ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge-Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge-Context",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -286,7 +348,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "b794a630-698c-4d27-827c-e1f35eb02c23",
+  "versionId": "89c2826c-5d2f-4a72-a41a-ea0897ddfb87",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4c15731e9a346c69def811be2053d705b21e21a79029305db9d12b409fb86b59"
