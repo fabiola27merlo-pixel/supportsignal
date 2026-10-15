@@ -7,7 +7,7 @@
       "typeVersion": 1,
       "position": [
         0,
-        0
+        96
       ],
       "id": "cc428de3-97aa-4af9-bdf4-3974107df9a7",
       "name": "When clicking ‘Execute workflow’"
@@ -23,7 +23,7 @@
       "typeVersion": 4.5,
       "position": [
         224,
-        0
+        96
       ],
       "id": "013bf2b9-a27b-4d99-ba88-c1597cd60c7d",
       "name": "HTTP Request",
@@ -44,7 +44,7 @@
       "typeVersion": 1,
       "position": [
         448,
-        0
+        96
       ],
       "id": "236d2e65-cade-415e-9691-13e694e630ef",
       "name": "Split Out"
@@ -62,7 +62,7 @@
             {
               "id": "3cc6b0c2-3d84-4c08-bd1b-987fb8f448fa",
               "leftValue": "={{ $json.conversations.company.name }}",
-              "rightValue": "BrightDesk",
+              "rightValue": "NovaTech",
               "operator": {
                 "type": "string",
                 "operation": "equals"
@@ -77,7 +77,7 @@
       "typeVersion": 2.3,
       "position": [
         672,
-        0
+        96
       ],
       "id": "e3748555-c8b5-4003-b585-bae75ea2ec29",
       "name": "Filter"
@@ -103,7 +103,7 @@
       "typeVersion": 1.1,
       "position": [
         896,
-        0
+        32
       ],
       "id": "f52f7ae3-1bbd-487d-8a77-e54b3df0b088",
       "name": "Get many accounts",
@@ -123,8 +123,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        672,
-        192
+        1120,
+        96
       ],
       "id": "3997fdff-793d-4adc-9c28-fde3d3d1ed44",
       "name": "Merge"
@@ -206,25 +206,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        896,
-        192
+        1344,
+        96
       ],
       "id": "2b0e88ec-db96-4959-a037-24d86d1fef10",
       "name": "Edit Fields"
-    },
-    {
-      "parameters": {
-        "url": "=http://host.docker.internal:8000/v1/system-context/{{ $json.service }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.5,
-      "position": [
-        1120,
-        192
-      ],
-      "id": "dd388b15-c7ec-449f-816d-c7af7a105d86",
-      "name": "HTTP Request1"
     },
     {
       "parameters": {
@@ -235,11 +221,377 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        912,
-        400
+        1792,
+        96
       ],
       "id": "01b8f483-825e-47c0-bd61-08d9d4a373a6",
       "name": "Merge-Context"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "62a254e5-ed9a-41c4-8a8b-0525b14401f4",
+              "name": "decision",
+              "value": "ENGINEERING_ESCALATION",
+              "type": "string"
+            },
+            {
+              "id": "5cf68457-e12d-4d4a-8b86-a3e4f27d2371",
+              "name": "decision_source",
+              "value": "deterministic_rule",
+              "type": "string"
+            },
+            {
+              "id": "95bcbcae-10e3-42fc-b185-1d5976ba56ca",
+              "name": "decision_reason",
+              "value": "Active system incident",
+              "type": "string"
+            },
+            {
+              "id": "7919446b-9f23-49a4-aeb1-12e85f91f209",
+              "name": "model_confidence",
+              "value": "",
+              "type": "number"
+            },
+            {
+              "id": "35ef09f5-83ac-44af-aa76-96a7f83888ef",
+              "name": "requires_human_review",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2240,
+        0
+      ],
+      "id": "37edf551-3125-4183-8ed2-bd215bd82e49",
+      "name": "Set Engineering Escalation"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fff18750-704a-475d-8901-e0ad017610dc",
+              "leftValue": false,
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2016,
+        96
+      ],
+      "id": "426af4ce-48b0-4e58-85d2-264eba64a379",
+      "name": "Active Incident?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "69661f9a-0053-460f-bac1-205322da5e03",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "healthy",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "205a2c8e-adb4-4da7-b28d-d0554011091d",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "One of our users",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2240,
+        192
+      ],
+      "id": "399b2fc6-8a24-42a5-87d1-c8d52b40e714",
+      "name": "Low-Risk Support Case?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b17b0c1c-7808-467e-a5a6-4b65b1128c4a",
+              "name": "decision",
+              "value": "SUPPORT_CONTINUE",
+              "type": "string"
+            },
+            {
+              "id": "139b4c48-ad0e-4610-ba4a-b6a60aaba518",
+              "name": "decision_source",
+              "value": "deterministic_rule",
+              "type": "string"
+            },
+            {
+              "id": "371d83cd-a0e3-43bd-a430-e4a0c21e317a",
+              "name": "decision_reason",
+              "value": "Healthy system and isolated user issue",
+              "type": "string"
+            },
+            {
+              "id": "c28a49fc-288f-4e64-af69-ebe532f37bd6",
+              "name": "requires_human_review",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2464,
+        96
+      ],
+      "id": "4ceb449a-a30e-4aaf-b6c4-efc2000d1c8d",
+      "name": "SUPPORT_CONTINUE"
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:8000/v1/system-context/{{ $json.service }}?region={{ $json.region }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1568,
+        32
+      ],
+      "id": "dd388b15-c7ec-449f-816d-c7af7a105d86",
+      "name": "Get System Health"
+    },
+    {
+      "parameters": {
+        "operation": "route",
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "jev-latest",
+          "cachedResultName": "jev-latest"
+        },
+        "stateText": "=Ticket title: {{ $json.ticket_title }}\nCustomer message: {{ $json.message }}\n\nCustomer segment: {{ $json.customer_segment }}\nARR: {{ $json.arr }}\nSLA: {{ $json.sla }}\nRegion: {{ $json.region }}\n\nAffected service: {{ $json.service }}\nSystem status: {{ $json.status }}\nError rate: {{ $json.error_rate }}\nP95 latency: {{ $json.p95_latency_ms }} ms\nActive incident: {{ $json.active_incident }}\nAffected region: {{ $json.affected_region }}",
+        "routeInstructions": "Based only on the provided support case, customer context, and system health evidence, decide whether this case should be escalated to Engineering now or remain with Support for continued troubleshooting.\n\nEscalate when the evidence suggests a product or system defect, service degradation, multi-user impact, or meaningful technical risk that requires Engineering investigation.\n\nContinue with Support when the evidence is more consistent with an isolated user, account, configuration, or troubleshooting issue and there is no strong system-level evidence requiring Engineering.\n\nDo not assume facts that are not present in the provided state.",
+        "routes": {
+          "route": [
+            {
+              "name": "ENGINEERING_ESCALATION",
+              "description": "The case requires Engineering investigation now."
+            },
+            {
+              "name": "SUPPORT_CONTINUE",
+              "description": "The case should remain with Support for continued troubleshooting."
+            }
+          ]
+        },
+        "confidenceHandling": "separateOutput",
+        "confidenceThreshold": 0.8,
+        "options": {}
+      },
+      "type": "@typesafe-ai/n8n-nodes-typesafe-ai.typeSafeAi",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        288
+      ],
+      "id": "04c40b72-fec6-4bbd-b0ad-bf6473a0a46c",
+      "name": "JEV",
+      "credentials": {
+        "typeSafeAiApi": {
+          "id": "K7i2LP32ddsfcUVB",
+          "name": "TypeSafe AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd6bec10-fdce-4de7-8d33-51b6498f0315",
+              "name": "decision",
+              "value": "ENGINEERING_ESCALATION",
+              "type": "string"
+            },
+            {
+              "id": "48e201d8-084c-4bde-8702-400e7a43eec7",
+              "name": "decision_source",
+              "value": "jev",
+              "type": "string"
+            },
+            {
+              "id": "5d7a7a69-df41-4216-a18d-64b41c088419",
+              "name": "decision_reason",
+              "value": "Probabilistic decision based on support, customer, and system evidence",
+              "type": "string"
+            },
+            {
+              "id": "8e084b08-4bf3-4b3f-91b6-9d9616009dc3",
+              "name": "requires_human_review",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "4e698bff-dce7-41b6-8de0-d3218d80a93d",
+              "name": "model_confidence",
+              "value": "={{ $json.route.confidence }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2688,
+        176
+      ],
+      "id": "878bf442-d097-4a80-bd22-1e315c1cabfb",
+      "name": "Set Jev Engineering Escalation"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "efbf6e08-b122-4254-9fce-172eabda5d41",
+              "name": "decision",
+              "value": "HUMAN_REVIEW",
+              "type": "string"
+            },
+            {
+              "id": "cbe22dbf-4d74-461b-ba73-68fe8170c7fe",
+              "name": "decision_source",
+              "value": "jev_low_confidence",
+              "type": "string"
+            },
+            {
+              "id": "9e451bb7-0563-4bd4-806d-1380980fcd40",
+              "name": "decision_reason",
+              "value": "Jev confidence below automation threshold",
+              "type": "string"
+            },
+            {
+              "id": "94d538e9-0b0d-4de8-b6bb-b13b5c2a4777",
+              "name": "model_confidence",
+              "value": "={{ $json.route.confidence }}",
+              "type": "number"
+            },
+            {
+              "id": "db061c62-2340-4e9e-823d-ea17ea6750eb",
+              "name": "requires_human_review",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2688,
+        400
+      ],
+      "id": "3395b4fe-9c71-420c-a75b-fccb7fa2dbc7",
+      "name": "Set Human Review"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "efbf6e08-b122-4254-9fce-172eabda5d41",
+              "name": "decision",
+              "value": "SUPPORT_CONTINUE",
+              "type": "string"
+            },
+            {
+              "id": "cbe22dbf-4d74-461b-ba73-68fe8170c7fe",
+              "name": "decision_source",
+              "value": "jev",
+              "type": "string"
+            },
+            {
+              "id": "9e451bb7-0563-4bd4-806d-1380980fcd40",
+              "name": "decision_reason",
+              "value": "Probabilistic decision based on support, customer, and system evidence",
+              "type": "string"
+            },
+            {
+              "id": "94d538e9-0b0d-4de8-b6bb-b13b5c2a4777",
+              "name": "model_confidence",
+              "value": "={{ $json.route.confidence }}",
+              "type": "number"
+            },
+            {
+              "id": "db061c62-2340-4e9e-823d-ea17ea6750eb",
+              "name": "requires_human_review",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2704,
+        320
+      ],
+      "id": "83a3c19a-4f65-4dfd-bbd8-0d71184b8227",
+      "name": "Set Jev Support Continue"
     }
   ],
   "pinData": {},
@@ -319,7 +671,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request1",
+            "node": "Get System Health",
             "type": "main",
             "index": 0
           },
@@ -331,13 +683,85 @@
         ]
       ]
     },
-    "HTTP Request1": {
+    "Merge-Context": {
+      "main": [
+        [
+          {
+            "node": "Active Incident?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Active Incident?": {
+      "main": [
+        [
+          {
+            "node": "Set Engineering Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Low-Risk Support Case?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Low-Risk Support Case?": {
+      "main": [
+        [
+          {
+            "node": "SUPPORT_CONTINUE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "JEV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get System Health": {
       "main": [
         [
           {
             "node": "Merge-Context",
             "type": "main",
             "index": 1
+          }
+        ]
+      ]
+    },
+    "JEV": {
+      "main": [
+        [
+          {
+            "node": "Set Jev Engineering Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Jev Support Continue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Human Review",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -348,7 +772,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "89c2826c-5d2f-4a72-a41a-ea0897ddfb87",
+  "versionId": "1d92b548-450a-4b88-9a0f-404d6d5c80b6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4c15731e9a346c69def811be2053d705b21e21a79029305db9d12b409fb86b59"
